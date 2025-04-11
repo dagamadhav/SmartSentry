@@ -1,0 +1,10 @@
+2025-04-11 23:08:51,891 - INFO - Starting application initialization...
+2025-04-11 23:08:56,227 - INFO - All required dependencies are installed
+2025-04-11 23:08:56,227 - WARNING - No GPU detected. Running in CPU mode (performance will be limited)
+2025-04-11 23:08:56,227 - INFO - Directory checked/created: C:\Users\dagam\Desktop\7th sem\object_detection\data\models
+2025-04-11 23:08:56,228 - INFO - Directory checked/created: C:\Users\dagam\Desktop\7th sem\object_detection\data\alerts
+2025-04-11 23:08:56,228 - INFO - Directory checked/created: C:\Users\dagam\Desktop\7th sem\object_detection\data\logs
+2025-04-11 23:08:56,229 - INFO - Directory checked/created: C:\Users\dagam\Desktop\7th sem\object_detection\known_faces
+2025-04-11 23:08:56,229 - WARNING - YOLOv8 model not found. It will be downloaded automatically on first run.
+2025-04-11 23:08:56,641 - INFO - All checks passed. Starting application...
+2025-04-11 23:09:04,993 - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.

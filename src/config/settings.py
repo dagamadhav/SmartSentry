@@ -1,24 +1,36 @@
 import os
+import torch
 
 # Get the absolute path of the project root
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+
+# GPU settings
+USE_GPU = torch.cuda.is_available()
+GPU_MEMORY_FRACTION = 0.8  # Use 80% of available GPU memory
+BATCH_SIZE = 1 if USE_GPU else 1
 
 # Video settings
 VIDEO_SOURCE = 0  # 0 for default camera
 WIDTH = 640  # Reduced for better performance
 HEIGHT = 480
+FPS = 30
 
 # Detection intervals (in seconds)
 MOTION_DETECTION_INTERVAL = 0.1
 FACE_RECOGNITION_INTERVAL = 1.0
 ALERT_SUMMARY_INTERVAL = 60.0
 
+# Model paths
+MODEL_PATH = os.path.join(PROJECT_ROOT, 'data', 'models', 'yolov8n.pt')
+LLAVA_MODEL_PATH = "llava-hf/llava-1.5-7b-hf"
+
 # Alert settings
 ALERT_LOG_DIR = os.path.join(PROJECT_ROOT, 'data', 'alerts')
 ALERT_LOG_FILE = os.path.join(ALERT_LOG_DIR, 'alerts.json')
 
-# Ensure alert directory exists
+# Ensure directories exist
 os.makedirs(ALERT_LOG_DIR, exist_ok=True)
+os.makedirs(os.path.join(PROJECT_ROOT, 'data', 'models'), exist_ok=True)
 
 # Time windows for alert summaries (in seconds)
 TIME_WINDOWS = {
@@ -51,11 +63,22 @@ OBJECT_CATEGORIES = {
     }
 }
 
-# Minimum confidence threshold for detection
-MIN_CONFIDENCE = 0.3
+# Performance settings
+MAX_QUEUE_SIZE = 10
+PROCESSING_INTERVAL = 0.1  # 100ms
+GC_INTERVAL = 60  # 1 minute
+LLAVA_ANALYSIS_INTERVAL = 30  # 30 seconds
 
-# Model settings
-MODEL_PATH = os.path.join(PROJECT_ROOT, 'models', 'yolov8n.pt')
+# Error handling
+MAX_RETRIES = 3
+RETRY_DELAY = 1.0  # seconds
+
+# Logging
+LOG_LEVEL = "INFO"
+LOG_FILE = os.path.join(PROJECT_ROOT, 'data', 'logs', 'app.log')
+
+# Ensure log directory exists
+os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 # Motion Detection Settings
 MOTION_THRESHOLD = 5000
@@ -72,7 +95,6 @@ MODEL_PATH = "yolo-Weights/yolov8n.pt"
 MIN_CONFIDENCE = 0.4
 
 # Motion Detection Settings
-MOTION_THRESHOLD = 5000
 MOTION_DETECTION_INTERVAL = 2  # Process every Nth frame for motion
 
 # Face Recognition Settings
