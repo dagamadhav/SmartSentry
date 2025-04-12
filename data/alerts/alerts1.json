@@ -1,0 +1,181 @@
+{
+    "application_summary": {
+        "name": "SmartSentry Security System",
+        "version": "1.0.0",
+        "description": "Intelligent security surveillance system with object detection and face recognition",
+        "features": [
+            "Real-time object detection",
+            "Face recognition",
+            "Priority-based alerting",
+            "Scene understanding",
+            "Alert categorization"
+        ]
+    },
+    "alert_summary": {
+        "total_alerts": 15,
+        "time_window": "24 hours",
+        "categories": {
+            "HIGH_PRIORITY": 3,
+            "MEDIUM_PRIORITY": 5,
+            "LOW_PRIORITY": 7,
+            "IGNORED": 10
+        }
+    },
+    "alerts": [
+        {
+            "timestamp": "2024-04-11 09:15:23",
+            "object": "person",
+            "confidence": 0.95,
+            "category": "HIGH_PRIORITY",
+            "status": "ALERTED",
+            "description": "Unknown person detected in restricted area",
+            "action_taken": "Security notified",
+            "ignored": false,
+            "reason": "High confidence unknown person in restricted zone"
+        },
+        {
+            "timestamp": "2024-04-11 09:30:45",
+            "object": "person",
+            "confidence": 0.92,
+            "category": "IGNORED",
+            "status": "RECOGNIZED",
+            "description": "Known staff member detected",
+            "action_taken": "No action required",
+            "ignored": true,
+            "reason": "Face recognized as authorized personnel"
+        },
+        {
+            "timestamp": "2024-04-11 10:05:12",
+            "object": "dog",
+            "confidence": 0.88,
+            "category": "MEDIUM_PRIORITY",
+            "status": "NOTIFIED",
+            "description": "Animal detected in perimeter",
+            "action_taken": "Security team notified",
+            "ignored": false,
+            "reason": "Non-human movement in security zone"
+        },
+        {
+            "timestamp": "2024-04-11 10:30:00",
+            "object": "car",
+            "confidence": 0.85,
+            "category": "MEDIUM_PRIORITY",
+            "status": "NOTIFIED",
+            "description": "Unknown vehicle in parking area",
+            "action_taken": "License plate recorded",
+            "ignored": false,
+            "reason": "Unregistered vehicle in secure parking"
+        },
+        {
+            "timestamp": "2024-04-11 11:15:33",
+            "object": "backpack",
+            "confidence": 0.75,
+            "category": "HIGH_PRIORITY",
+            "status": "ALERTED",
+            "description": "Unattended bag detected",
+            "action_taken": "Security team dispatched",
+            "ignored": false,
+            "reason": "Potential security risk"
+        },
+        {
+            "timestamp": "2024-04-11 12:00:00",
+            "object": "person",
+            "confidence": 0.90,
+            "category": "IGNORED",
+            "status": "RECOGNIZED",
+            "description": "Regular delivery personnel",
+            "action_taken": "No action required",
+            "ignored": true,
+            "reason": "Known delivery staff during scheduled time"
+        },
+        {
+            "timestamp": "2024-04-11 13:45:22",
+            "object": "phone",
+            "confidence": 0.82,
+            "category": "LOW_PRIORITY",
+            "status": "LOGGED",
+            "description": "Mobile device detected",
+            "action_taken": "Logged for review",
+            "ignored": false,
+            "reason": "Common object in public area"
+        },
+        {
+            "timestamp": "2024-04-11 14:30:15",
+            "object": "person",
+            "confidence": 0.95,
+            "category": "HIGH_PRIORITY",
+            "status": "ALERTED",
+            "description": "Intruder detected after hours",
+            "action_taken": "Security team dispatched, police notified",
+            "ignored": false,
+            "reason": "Unauthorized access attempt"
+        }
+    ],
+    "ignored_alerts": [
+        {
+            "timestamp": "2024-04-11 09:00:00",
+            "object": "chair",
+            "confidence": 0.65,
+            "category": "LOW_PRIORITY",
+            "reason": "Stationary object in common area"
+        },
+        {
+            "timestamp": "2024-04-11 10:00:00",
+            "object": "tv",
+            "confidence": 0.70,
+            "category": "LOW_PRIORITY",
+            "reason": "Fixed installation"
+        },
+        {
+            "timestamp": "2024-04-11 11:00:00",
+            "object": "book",
+            "confidence": 0.60,
+            "category": "LOW_PRIORITY",
+            "reason": "Common object in office"
+        }
+    ],
+    "system_performance": {
+        "total_frames_processed": 86400,
+        "average_processing_time": "0.1 seconds",
+        "false_positives": 5,
+        "false_negatives": 2,
+        "accuracy": "98.5%"
+    },
+    "alert_statistics": {
+        "by_hour": {
+            "09:00": 3,
+            "10:00": 2,
+            "11:00": 1,
+            "12:00": 1,
+            "13:00": 1,
+            "14:00": 1
+        },
+        "by_category": {
+            "HIGH_PRIORITY": 3,
+            "MEDIUM_PRIORITY": 2,
+            "LOW_PRIORITY": 1,
+            "IGNORED": 2
+        },
+        "by_object": {
+            "person": 4,
+            "dog": 1,
+            "car": 1,
+            "backpack": 1,
+            "phone": 1
+        }
+    },
+    "security_actions": [
+        {
+            "timestamp": "2024-04-11 09:15:23",
+            "action": "Security team dispatched",
+            "location": "Restricted Area A",
+            "outcome": "Intruder apprehended"
+        },
+        {
+            "timestamp": "2024-04-11 14:30:15",
+            "action": "Police notified",
+            "location": "Main Entrance",
+            "outcome": "Investigation ongoing"
+        }
+    ]
+} 
