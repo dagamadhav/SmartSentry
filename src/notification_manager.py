@@ -23,7 +23,7 @@ class NotificationManager:
                 "smtp_server": "smtp.gmail.com",
                 "smtp_port": 587,
                 "sender_email": "21btrse014@jainuniveristy.ac.in",
-                "sender_password": "Madhav21btrse014",  # You'll need to add your app password here
+                "sender_password": "",  # You'll need to add your app password here
                 "recipient_email": "dagamadhav1@gmail.com"
             },
             "notification_sound": True,
