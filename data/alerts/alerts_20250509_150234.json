@@ -1,0 +1,81 @@
+{
+    "session_info": {
+        "start_time": "2025-05-09 15:02:34",
+        "end_time": "2025-05-09 15:03:00",
+        "filename": "alerts_20250509_150234.json"
+    },
+    "alert_summary": {
+        "total_alerts": 5,
+        "time_window": "24 hours",
+        "categories": {
+            "HIGH_PRIORITY": 3,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 2,
+            "IGNORED": 0
+        }
+    },
+    "alerts": [
+        {
+            "timestamp": "2025-05-09 15:02:38",
+            "object": "car",
+            "confidence": 0.8168163895606995,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected car with 0.82 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:02:38",
+            "object": "person",
+            "confidence": 0.7120062112808228,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected unknown person with 0.71 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:02:40",
+            "object": "pottedplant",
+            "confidence": 0.5164682865142822,
+            "category": "LOW_PRIORITY",
+            "description": "Detected pottedplant with 0.52 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:02:41",
+            "object": "backpack",
+            "confidence": 0.5229583978652954,
+            "category": "LOW_PRIORITY",
+            "description": "Detected backpack with 0.52 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:02:56",
+            "object": "truck",
+            "confidence": 0.512520432472229,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected truck with 0.51 confidence",
+            "status": "NEW"
+        }
+    ],
+    "system_performance": {
+        "total_frames_processed": 200,
+        "average_processing_time": "0.1 seconds",
+        "false_positives": 0,
+        "false_negatives": 0,
+        "accuracy": "98.5%"
+    },
+    "alert_statistics": {
+        "by_category": {
+            "HIGH_PRIORITY": 3,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 2,
+            "IGNORED": 0
+        },
+        "by_object": {
+            "car": 1,
+            "person": 1,
+            "pottedplant": 1,
+            "backpack": 1,
+            "truck": 1
+        }
+    }
+}

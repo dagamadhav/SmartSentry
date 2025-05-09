@@ -1,0 +1,180 @@
+{
+    "session_info": {
+        "start_time": "2025-05-09 14:22:49",
+        "end_time": "2025-05-09 14:24:41",
+        "filename": "alerts_20250509_142249.json"
+    },
+    "alert_summary": {
+        "total_alerts": 16,
+        "time_window": "24 hours",
+        "categories": {
+            "HIGH_PRIORITY": 1,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 15,
+            "IGNORED": 0
+        }
+    },
+    "alerts": [
+        {
+            "timestamp": "2025-05-09 14:23:16",
+            "object": "person",
+            "confidence": 0.9424145221710205,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected unknown person with 0.94 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:21",
+            "object": "chair",
+            "confidence": 0.5727894306182861,
+            "category": "LOW_PRIORITY",
+            "description": "Detected chair with 0.57 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:33",
+            "object": "bottle",
+            "confidence": 0.7745134234428406,
+            "category": "LOW_PRIORITY",
+            "description": "Detected bottle with 0.77 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:34",
+            "object": "tennis racket",
+            "confidence": 0.25230130553245544,
+            "category": "LOW_PRIORITY",
+            "description": "Detected tennis racket with 0.25 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:34",
+            "object": "cell phone",
+            "confidence": 0.5319837331771851,
+            "category": "LOW_PRIORITY",
+            "description": "Detected cell phone with 0.53 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:40",
+            "object": "remote",
+            "confidence": 0.5046067237854004,
+            "category": "LOW_PRIORITY",
+            "description": "Detected remote with 0.50 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:47",
+            "object": "toothbrush",
+            "confidence": 0.8435158133506775,
+            "category": "LOW_PRIORITY",
+            "description": "Detected toothbrush with 0.84 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:49",
+            "object": "spoon",
+            "confidence": 0.3248271048069,
+            "category": "LOW_PRIORITY",
+            "description": "Detected spoon with 0.32 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:50",
+            "object": "baseball bat",
+            "confidence": 0.3002189099788666,
+            "category": "LOW_PRIORITY",
+            "description": "Detected baseball bat with 0.30 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:55",
+            "object": "tie",
+            "confidence": 0.41631677746772766,
+            "category": "LOW_PRIORITY",
+            "description": "Detected tie with 0.42 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:56",
+            "object": "pottedplant",
+            "confidence": 0.34500643610954285,
+            "category": "LOW_PRIORITY",
+            "description": "Detected pottedplant with 0.35 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:56",
+            "object": "vase",
+            "confidence": 0.41894370317459106,
+            "category": "LOW_PRIORITY",
+            "description": "Detected vase with 0.42 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:23:57",
+            "object": "cup",
+            "confidence": 0.33901748061180115,
+            "category": "LOW_PRIORITY",
+            "description": "Detected cup with 0.34 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:24:01",
+            "object": "carrot",
+            "confidence": 0.25083425641059875,
+            "category": "LOW_PRIORITY",
+            "description": "Detected carrot with 0.25 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:24:02",
+            "object": "bowl",
+            "confidence": 0.361069917678833,
+            "category": "LOW_PRIORITY",
+            "description": "Detected bowl with 0.36 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 14:24:08",
+            "object": "banana",
+            "confidence": 0.26280316710472107,
+            "category": "LOW_PRIORITY",
+            "description": "Detected banana with 0.26 confidence",
+            "status": "NEW"
+        }
+    ],
+    "system_performance": {
+        "total_frames_processed": 1900,
+        "average_processing_time": "0.0 seconds",
+        "false_positives": 0,
+        "false_negatives": 0,
+        "accuracy": "98.5%"
+    },
+    "alert_statistics": {
+        "by_category": {
+            "HIGH_PRIORITY": 1,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 15,
+            "IGNORED": 0
+        },
+        "by_object": {
+            "person": 1,
+            "chair": 1,
+            "bottle": 1,
+            "tennis racket": 1,
+            "cell phone": 1,
+            "remote": 1,
+            "toothbrush": 1,
+            "spoon": 1,
+            "baseball bat": 1,
+            "tie": 1,
+            "pottedplant": 1,
+            "vase": 1,
+            "cup": 1,
+            "carrot": 1,
+            "bowl": 1,
+            "banana": 1
+        }
+    }
+}

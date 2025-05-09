@@ -7,7 +7,9 @@ from datetime import datetime
 import json
 import time
 import pandas as pd
-from collections import Counter
+from collections import Counter, defaultdict
+from src.alert_manager import AlertManager
+from src.notification_manager import NotificationManager
 
 # Define constants
 WIDTH, HEIGHT = 640, 480
@@ -15,9 +17,8 @@ MODEL_PATH = "yolo-Weights/yolov8n.pt"
 MOTION_THRESHOLD = 5000  # Adjust based on sensitivity
 MIN_CONFIDENCE = 0.3  # Lowered confidence threshold to detect more objects
 KNOWN_FACES_DIR = "known_faces"
-ALERT_LOG_FILE = "alerts.json"
-VIDEO_SOURCE = 0  # 0 for webcam, or path to video file for testing
-#VIDEO_SOURCE = "test_video.mp4"  # Replace with your video filename
+VIDEO_SOURCE = "test1.mp4"  # Path to your test video file
+ALERT_COOLDOWN = 120  # 2 minutes cooldown between alerts for the same object
 
 # YOLO class names
 CLASS_NAMES = [
@@ -35,10 +36,10 @@ CLASS_NAMES = [
 
 # Define alert categories
 ALERT_CATEGORIES = {
-    "HIGH": ["person", "car", "truck", "bus"],
-    "MEDIUM": ["bicycle", "motorbike", "dog", "cat"],
-    "LOW": ["bird", "chair", "bottle"],
-    "IGNORE": ["tree", "leaves", "clouds"]
+    "HIGH_PRIORITY": ["person", "car", "truck", "bus"],
+    "MEDIUM_PRIORITY": ["bicycle", "motorbike", "dog", "cat"],
+    "LOW_PRIORITY": ["bird", "chair", "bottle"],
+    "IGNORED": ["tree", "leaves", "clouds"]
 }
 
 # Initialize face detection
@@ -49,6 +50,7 @@ FACE_MATCH_THRESHOLD = 0.6  # Lower values make matching more strict
 FACE_RECOGNITION_INTERVAL = 30  # Only perform face recognition every N frames
 frame_counter = 0
 last_known_face_result = False
+last_known_face_name = None
 
 class KnownFace:
     def __init__(self, name, face_encoding, face_rect):
@@ -56,101 +58,34 @@ class KnownFace:
         self.face_encoding = face_encoding
         self.face_rect = face_rect
 
-def initialize_alerts_file():
-    """Initialize the alerts.json file with an empty array if it doesn't exist"""
-    if not os.path.exists(ALERT_LOG_FILE):
-        with open(ALERT_LOG_FILE, 'w') as f:
-            json.dump([], f, indent=4)
-        print(f"Created new {ALERT_LOG_FILE} file")
-    else:
-        print(f"{ALERT_LOG_FILE} already exists")
-
-def get_alerts_by_date(start_date=None, end_date=None, status=None):
-    """Get alerts filtered by date range and status"""
-    try:
-        with open(ALERT_LOG_FILE, 'r') as f:
-            alerts = json.load(f)
+class AlertTracker:
+    def __init__(self, cooldown_period=ALERT_COOLDOWN):
+        self.last_alert_times = defaultdict(float)
+        self.cooldown_period = cooldown_period
+        self.known_person_detected = False
+        self.known_person_name = None
+        self.last_known_person_time = 0
+    
+    def can_alert(self, object_name, confidence, is_known_person=False, person_name=None):
+        current_time = time.time()
         
-        if start_date:
-            start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            alerts = [a for a in alerts if datetime.strptime(a['timestamp'], "%Y-%m-%d %H:%M:%S") >= start_date]
+        # Handle known person detection
+        if is_known_person and person_name:
+            if current_time - self.last_known_person_time >= self.cooldown_period:
+                self.known_person_detected = True
+                self.known_person_name = person_name
+                self.last_known_person_time = current_time
+                return True
+            return False
         
-        if end_date:
-            end_date = datetime.strptime(end_date, "%Y-%m-%d")
-            alerts = [a for a in alerts if datetime.strptime(a['timestamp'], "%Y-%m-%d %H:%M:%S") <= end_date]
-        
-        if status:
-            alerts = [a for a in alerts if a['status'] == status]
-        
-        return alerts
-    except Exception as e:
-        print(f"Error getting alerts: {str(e)}")
-        return []
-
-def update_alert_status(alert_index, new_status):
-    """Update the status of a specific alert"""
-    try:
-        with open(ALERT_LOG_FILE, 'r') as f:
-            alerts = json.load(f)
-        
-        if 0 <= alert_index < len(alerts):
-            alerts[alert_index]['status'] = new_status
-            with open(ALERT_LOG_FILE, 'w') as f:
-                json.dump(alerts, f, indent=4)
+        # Handle regular object detection
+        if current_time - self.last_alert_times[object_name] >= self.cooldown_period:
+            self.last_alert_times[object_name] = current_time
             return True
         return False
-    except Exception as e:
-        print(f"Error updating alert status: {str(e)}")
-        return False
-
-def get_alert_statistics():
-    """Get statistics about alerts"""
-    try:
-        with open(ALERT_LOG_FILE, 'r') as f:
-            alerts = json.load(f)
-        
-        if not alerts:
-            return {
-                "total_alerts": 0,
-                "by_type": {},
-                "by_status": {},
-                "average_confidence": 0
-            }
-        
-        # Count alerts by type
-        type_counts = Counter(a['object'] for a in alerts)
-        
-        # Count alerts by status
-        status_counts = Counter(a['status'] for a in alerts)
-        
-        # Calculate average confidence
-        avg_confidence = sum(a['confidence'] for a in alerts) / len(alerts)
-        
-        return {
-            "total_alerts": len(alerts),
-            "by_type": dict(type_counts),
-            "by_status": dict(status_counts),
-            "average_confidence": avg_confidence
-        }
-    except Exception as e:
-        print(f"Error getting statistics: {str(e)}")
-        return None
-
-def export_alerts_to_csv(filename="alerts_export.csv"):
-    """Export alerts to a CSV file"""
-    try:
-        with open(ALERT_LOG_FILE, 'r') as f:
-            alerts = json.load(f)
-        
-        if alerts:
-            df = pd.DataFrame(alerts)
-            df.to_csv(filename, index=False)
-            print(f"Alerts exported to {filename}")
-            return True
-        return False
-    except Exception as e:
-        print(f"Error exporting alerts: {str(e)}")
-        return False
+    
+    def get_known_person_info(self):
+        return self.known_person_detected, self.known_person_name
 
 def get_face_encoding(face_img):
     """Convert face image to a feature vector using HOG and LBP"""
@@ -228,7 +163,7 @@ def load_known_faces():
     return known_faces
 
 def initialize_camera(width=WIDTH, height=HEIGHT):
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(VIDEO_SOURCE)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
     return cap
@@ -251,12 +186,12 @@ def detect_motion(frame1, frame2):
 
 def check_face_recognition(frame, known_faces):
     """Check if any faces in the frame match known faces"""
-    global frame_counter, last_known_face_result
+    global frame_counter, last_known_face_result, last_known_face_name
     
     # Only perform face recognition every N frames
     frame_counter += 1
     if frame_counter % FACE_RECOGNITION_INTERVAL != 0:
-        return last_known_face_result
+        return last_known_face_result, last_known_face_name
     
     # Convert frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -275,108 +210,172 @@ def check_face_recognition(frame, known_faces):
             if similarity > FACE_MATCH_THRESHOLD:
                 # Draw green rectangle around recognized face
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-                cv2.putText(frame, known_face.name, (x, y-10), 
-                          cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                # Add name label with background for better visibility
+                text = f"{known_face.name}"
+                text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+                cv2.rectangle(frame, (x, y-30), (x + text_size[0], y), (0, 255, 0), -1)
+                cv2.putText(frame, text, (x, y-10), 
+                          cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
                 last_known_face_result = True
-                return True
+                last_known_face_name = known_face.name
+                return True, known_face.name
         
         # Draw red rectangle around unknown face
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 0, 255), 2)
-        cv2.putText(frame, "Unknown", (x, y-10), 
-                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        # Add "Unknown" label with background
+        text = "Unknown"
+        text_size = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+        cv2.rectangle(frame, (x, y-30), (x + text_size[0], y), (0, 0, 255), -1)
+        cv2.putText(frame, text, (x, y-10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
     
     last_known_face_result = False
-    return False
+    last_known_face_name = None
+    return False, None
 
-def log_alert(alert_type, object_name, confidence, timestamp):
-    """Log an alert to the alerts.json file"""
-    try:
-        # Read existing alerts
-        if os.path.exists(ALERT_LOG_FILE):
-            with open(ALERT_LOG_FILE, 'r') as f:
-                alerts = json.load(f)
-        else:
-            alerts = []
-        
-        # Create new alert
-        alert = {
-            "type": alert_type,
-            "object": object_name,
-            "confidence": float(confidence),
-            "timestamp": timestamp,
-            "status": "new"
-        }
-        
-        # Add alert to list
-        alerts.append(alert)
-        
-        # Write back to file
-        with open(ALERT_LOG_FILE, 'w') as f:
-            json.dump(alerts, f, indent=4)
-            
-        print(f"Alert logged: {object_name} at {timestamp}")
-        
-    except Exception as e:
-        print(f"Error logging alert: {str(e)}")
-
-def should_alert(object_name, confidence):
+def get_alert_category(object_name, confidence):
+    """Determine alert category based on object and confidence"""
     for category, objects in ALERT_CATEGORIES.items():
         if object_name in objects:
-            if category == "HIGH":
-                return True
-            elif category == "MEDIUM" and confidence > 0.5:
-                return True
-            elif category == "LOW" and confidence > 0.7:
-                return True
-            elif category == "IGNORE":
-                return False
-    return False
+            if category == "HIGH_PRIORITY":
+                return category
+            elif category == "MEDIUM_PRIORITY" and confidence > 0.5:
+                return category
+            elif category == "LOW_PRIORITY" and confidence > 0.7:
+                return category
+            elif category == "IGNORED":
+                return "LOW_PRIORITY"  # Convert IGNORED to LOW_PRIORITY for logging
+    return "LOW_PRIORITY"  # Default category
 
-def draw_bounding_box(img, box, cls, confidence, object_name):
+def draw_bounding_box(img, box, cls, confidence, object_name, is_known_person=False, person_name=None):
     x1, y1, x2, y2 = map(int, box.xyxy[0])
-    color = (0, 255, 0) if object_name in ALERT_CATEGORIES["HIGH"] else (0, 165, 255)
-    label = f"{object_name} {confidence:.2f}"
+    
+    if is_known_person and person_name:
+        # Known person
+        color = (0, 255, 0)  # Green
+        label = f"{person_name}"
+        # Draw box
+        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        # Add name label with background
+        text_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+        cv2.rectangle(img, (x1, y1-30), (x1 + text_size[0], y1), color, -1)
+        cv2.putText(img, label, (x1, y1-10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2)
+    else:
+        # Unknown person or other object
+        color = (0, 165, 255) if object_name in ALERT_CATEGORIES["HIGH_PRIORITY"] else (0, 165, 255)
+        label = f"{object_name} {confidence:.2f}"
+        # Draw box
+        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        # Add label with background
+        text_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2)[0]
+        cv2.rectangle(img, (x1, y1-30), (x1 + text_size[0], y1), color, -1)
+        cv2.putText(img, label, (x1, y1-10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
-    cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
-    cv2.putText(img, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+def create_ui_overlay(frame, alert_summary, performance_metrics):
+    """Create a clean, modern UI overlay"""
+    # Create a semi-transparent overlay
+    overlay = frame.copy()
+    cv2.rectangle(overlay, (0, 0), (frame.shape[1], 60), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.7, frame, 0.3, 0, frame)
+    
+    # Add timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cv2.putText(frame, timestamp, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    
+    # Add alert summary
+    if alert_summary:
+        alert_text = f"Alerts: {alert_summary['alert_summary']['total_alerts']}"
+        cv2.putText(frame, alert_text, (frame.shape[1] - 200, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    
+    # Add performance metrics
+    if performance_metrics:
+        fps_text = f"FPS: {performance_metrics['fps']:.1f}"
+        cv2.putText(frame, fps_text, (frame.shape[1] - 100, 30), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+    
+    return frame
 
-def process_frame(frame, model, known_faces):
+def process_frame(frame, model, known_faces, alert_manager, alert_tracker, notification_manager):
     """Process a single frame for object detection and alerting"""
     # Check for known faces first
-    is_known_face = check_face_recognition(frame, known_faces)
+    is_known_face, person_name = check_face_recognition(frame, known_faces)
     
     # Process objects
     results = model(frame, stream=True)
     for r in results:
         for box in r.boxes:
-            confidence = box.conf[0]
+            confidence = float(box.conf[0])
             cls = int(box.cls[0])
             object_name = CLASS_NAMES[cls]
             
-            # Only alert for person if face is not recognized
-            if object_name == "person" and is_known_face:
-                continue
-                
-            if confidence > MIN_CONFIDENCE and should_alert(object_name, confidence):
+            # Only process detections with confidence > 0.5
+            if confidence > 0.5:
+                # Handle person detection
+                if object_name == "person":
+                    if is_known_face:
+                        # Known person detected
+                        if alert_tracker.can_alert(object_name, confidence, True, person_name):
+                            category = "HIGH_PRIORITY"
+                            draw_bounding_box(frame, box, cls, confidence, object_name, True, person_name)
+                            alert_id = f"known_{person_name}_{time.time()}"
+                            alert_manager.add_alert(
+                                f"Known Person: {person_name}",
+                                confidence,
+                                category,
+                                f"Detected known person: {person_name}"
+                            )
+                            notification_manager.add_alert(alert_id, category, f"Known person detected: {person_name}")
+                    else:
+                        # Unknown person detected
+                        if alert_tracker.can_alert(object_name, confidence):
+                            category = get_alert_category(object_name, confidence)
+                            draw_bounding_box(frame, box, cls, confidence, object_name)
+                            alert_id = f"unknown_{time.time()}"
+                            alert_manager.add_alert(
+                                object_name,
+                                confidence,
+                                category,
+                                f"Detected unknown person with {confidence:.2f} confidence"
+                            )
+                            if category == "HIGH_PRIORITY":
+                                notification_manager.add_alert(alert_id, category, "Unknown person detected")
+                else:
+                    # Handle other objects
+                    if alert_tracker.can_alert(object_name, confidence):
+                        category = get_alert_category(object_name, confidence)
+                        if category != "IGNORED":
+                            draw_bounding_box(frame, box, cls, confidence, object_name)
+                            alert_id = f"{object_name}_{time.time()}"
+                            alert_manager.add_alert(
+                                object_name,
+                                confidence,
+                                category,
+                                f"Detected {object_name} with {confidence:.2f} confidence"
+                            )
+                            if category == "HIGH_PRIORITY":
+                                notification_manager.add_alert(alert_id, category, f"High priority object detected: {object_name}")
+            else:
+                # Still draw bounding boxes for low confidence detections but don't save alerts
                 draw_bounding_box(frame, box, cls, confidence, object_name)
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                log_alert("object_detection", object_name, float(confidence), timestamp)
     
     return frame
 
 def main():
-    # Initialize alerts file
-    initialize_alerts_file()
+    # Initialize managers
+    alert_manager = AlertManager()
+    alert_manager.start_processing()
+    alert_tracker = AlertTracker()
+    notification_manager = NotificationManager()
+    notification_manager.start()
     
     # Load YOLO model
     model = YOLO(MODEL_PATH)
     
     # Initialize video capture
-    if isinstance(VIDEO_SOURCE, int):
-        cap = cv2.VideoCapture(VIDEO_SOURCE)  # Webcam
-    else:
-        cap = cv2.VideoCapture(VIDEO_SOURCE)  # Video file
-    
+    cap = cv2.VideoCapture(VIDEO_SOURCE)
     if not cap.isOpened():
         print("Error: Could not open video source")
         return
@@ -392,52 +391,62 @@ def main():
     ret, frame1 = cap.read()
     ret, frame2 = cap.read()
     
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            print("End of video or failed to read frame")
-            break
+    frame_count = 0
+    start_time = time.time()
+    fps = 0
+    
+    try:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                print("End of video or failed to read frame")
+                break
             
-        # Check for motion
-        motion_detected = detect_motion(frame1, frame2)
-        
-        if motion_detected:
-            # Process frame for object detection
-            frame = process_frame(frame, model, known_faces)
-        
-        # Update frames for motion detection
-        frame1 = frame2
-        frame2 = frame
-        
-        # Display the video feed with detections
-        cv2.imshow('Enhanced Security Camera', frame)
-        
-        # Check for keyboard input
-        key = cv2.waitKey(1) & 0xFF
-        if key == ord('q'):
-            break
-        elif key == ord('s'):  # Press 's' to show statistics
-            stats = get_alert_statistics()
-            print("\nAlert Statistics:")
-            print(f"Total Alerts: {stats['total_alerts']}")
-            print(f"Average Confidence: {stats['average_confidence']:.2f}")
-            print("\nAlerts by Type:")
-            for obj, count in stats['by_type'].items():
-                print(f"{obj}: {count}")
-            print("\nAlerts by Status:")
-            for status, count in stats['by_status'].items():
-                print(f"{status}: {count}")
-        elif key == ord('e'):  # Press 'e' to export alerts
-            export_alerts_to_csv()
-        elif key == ord('p'):  # Press 'p' to print current alerts
-            with open(ALERT_LOG_FILE, 'r') as f:
-                alerts = json.load(f)
-                print("\nCurrent Alerts:")
-                for alert in alerts:
-                    print(f"Object: {alert['object']}, Confidence: {alert['confidence']}, Time: {alert['timestamp']}")
-
-    cap.release()
-    cv2.destroyAllWindows()
+            # Calculate FPS
+            frame_count += 1
+            if frame_count % 30 == 0:
+                fps = 30 / (time.time() - start_time)
+                start_time = time.time()
+            
+            # Check for motion
+            motion_detected = detect_motion(frame1, frame2)
+            
+            if motion_detected:
+                # Process frame
+                frame = process_frame(frame, model, known_faces, alert_manager, alert_tracker, notification_manager)
+            
+            # Update frames for motion detection
+            frame1 = frame2
+            frame2 = frame
+            
+            # Get current metrics
+            alert_summary = alert_manager.get_alert_summary()
+            performance_metrics = {'fps': fps}
+            
+            # Add UI overlay
+            frame = create_ui_overlay(frame, alert_summary, performance_metrics)
+            
+            # Display the video feed
+            cv2.imshow('Enhanced Security Camera', frame)
+            
+            # Check for keyboard input
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord('q'):
+                break
+            elif key == ord('s'):
+                if alert_summary:
+                    print("\nAlert Summary:")
+                    print(f"Total Alerts: {alert_summary['alert_summary']['total_alerts']}")
+                    print(f"System Accuracy: {alert_summary['system_performance']['accuracy']}")
+                    print("\nAlerts by Category:")
+                    for category, count in alert_summary['alert_summary']['categories'].items():
+                        print(f"{category}: {count}")
+    
+    finally:
+        cap.release()
+        cv2.destroyAllWindows()
+        alert_manager.stop_processing()
+        notification_manager.stop()
 
 if __name__ == "__main__":
     main()
