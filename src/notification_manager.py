@@ -22,8 +22,8 @@ class NotificationManager:
                 "enabled": True,
                 "smtp_server": "smtp.gmail.com",
                 "smtp_port": 587,
-                "sender_email": "dagamadhav1@gmail.com",
-                "sender_password": "",  # You'll need to add your app password here
+                "sender_email": "21btrse014@jainuniveristy.ac.in",
+                "sender_password": "Madhav21btrse014",  # You'll need to add your app password here
                 "recipient_email": "dagamadhav1@gmail.com"
             },
             "notification_sound": True,
@@ -117,7 +117,11 @@ class NotificationManager:
             if not all([self.config['email']['sender_email'], 
                        self.config['email']['sender_password'],
                        self.config['email']['recipient_email']]):
+                print("Email configuration incomplete. Please check all email settings.")
                 return
+            
+            print(f"Attempting to send email to {self.config['email']['recipient_email']}")
+            print(f"Using SMTP server: {self.config['email']['smtp_server']}:{self.config['email']['smtp_port']}")
             
             msg = MIMEMultipart()
             msg['From'] = self.config['email']['sender_email']
@@ -126,17 +130,32 @@ class NotificationManager:
             
             msg.attach(MIMEText(message, 'plain'))
             
+            print("Connecting to SMTP server...")
             server = smtplib.SMTP(self.config['email']['smtp_server'], 
                                 self.config['email']['smtp_port'])
+            
+            print("Starting TLS connection...")
             server.starttls()
+            
+            print("Attempting login...")
             server.login(self.config['email']['sender_email'],
                         self.config['email']['sender_password'])
+            
+            print("Sending email...")
             server.send_message(msg)
             server.quit()
             print("Email notification sent successfully")
             
+        except smtplib.SMTPAuthenticationError as e:
+            print(f"SMTP Authentication Error: {str(e)}")
+            print("Please verify your email and app password are correct.")
+            print("Make sure you're using an App Password, not your regular Gmail password.")
+        except smtplib.SMTPException as e:
+            print(f"SMTP Error: {str(e)}")
+            print("Please check your internet connection and SMTP settings.")
         except Exception as e:
             print(f"Error sending email notification: {str(e)}")
+            print("Please check your email configuration in notification_config.json")
     
     def _send_desktop_notification(self, message):
         """Send desktop notification"""

@@ -1,0 +1,81 @@
+{
+    "session_info": {
+        "start_time": "2025-05-09 15:30:47",
+        "end_time": "2025-05-09 15:31:47",
+        "filename": "alerts_20250509_153047.json"
+    },
+    "alert_summary": {
+        "total_alerts": 5,
+        "time_window": "24 hours",
+        "categories": {
+            "HIGH_PRIORITY": 1,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 4,
+            "IGNORED": 0
+        }
+    },
+    "alerts": [
+        {
+            "timestamp": "2025-05-09 15:31:21",
+            "object": "person",
+            "confidence": 0.9206039905548096,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected unknown person with 0.92 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:31:26",
+            "object": "remote",
+            "confidence": 0.8310527801513672,
+            "category": "LOW_PRIORITY",
+            "description": "Detected remote with 0.83 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:31:28",
+            "object": "traffic light",
+            "confidence": 0.711016058921814,
+            "category": "LOW_PRIORITY",
+            "description": "Detected traffic light with 0.71 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:31:29",
+            "object": "book",
+            "confidence": 0.5821415781974792,
+            "category": "LOW_PRIORITY",
+            "description": "Detected book with 0.58 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:31:35",
+            "object": "bottle",
+            "confidence": 0.5963448882102966,
+            "category": "LOW_PRIORITY",
+            "description": "Detected bottle with 0.60 confidence",
+            "status": "NEW"
+        }
+    ],
+    "system_performance": {
+        "total_frames_processed": 0,
+        "average_processing_time": "0.0 seconds",
+        "false_positives": 0,
+        "false_negatives": 0,
+        "accuracy": "0%"
+    },
+    "alert_statistics": {
+        "by_category": {
+            "HIGH_PRIORITY": 1,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 4,
+            "IGNORED": 0
+        },
+        "by_object": {
+            "person": 1,
+            "remote": 1,
+            "traffic light": 1,
+            "book": 1,
+            "bottle": 1
+        }
+    }
+}

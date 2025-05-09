@@ -1,8 +1,8 @@
 {
     "session_info": {
-        "start_time": "2025-05-09 15:02:34",
-        "end_time": "2025-05-09 15:03:00",
-        "filename": "alerts_20250509_150234.json"
+        "start_time": "2025-05-09 15:41:05",
+        "end_time": "2025-05-09 15:41:36",
+        "filename": "alerts_20250509_154105.json"
     },
     "alert_summary": {
         "total_alerts": 5,
@@ -16,31 +16,31 @@
     },
     "alerts": [
         {
-            "timestamp": "2025-05-09 15:02:38",
+            "timestamp": "2025-05-09 15:41:09",
             "object": "car",
-            "confidence": 0.8168163895606995,
+            "confidence": 0.8176421523094177,
             "category": "HIGH_PRIORITY",
             "description": "Detected car with 0.82 confidence",
             "status": "NEW"
         },
         {
-            "timestamp": "2025-05-09 15:02:38",
-            "object": "person",
-            "confidence": 0.7120062112808228,
-            "category": "HIGH_PRIORITY",
-            "description": "Detected unknown person with 0.71 confidence",
-            "status": "NEW"
-        },
-        {
-            "timestamp": "2025-05-09 15:02:40",
+            "timestamp": "2025-05-09 15:41:09",
             "object": "pottedplant",
-            "confidence": 0.5164682865142822,
+            "confidence": 0.5174499154090881,
             "category": "LOW_PRIORITY",
             "description": "Detected pottedplant with 0.52 confidence",
             "status": "NEW"
         },
         {
-            "timestamp": "2025-05-09 15:02:41",
+            "timestamp": "2025-05-09 15:41:10",
+            "object": "person",
+            "confidence": 0.6300279498100281,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected unknown person with 0.63 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:41:13",
             "object": "backpack",
             "confidence": 0.5229583978652954,
             "category": "LOW_PRIORITY",
@@ -48,7 +48,7 @@
             "status": "NEW"
         },
         {
-            "timestamp": "2025-05-09 15:02:56",
+            "timestamp": "2025-05-09 15:41:31",
             "object": "truck",
             "confidence": 0.512520432472229,
             "category": "HIGH_PRIORITY",
@@ -57,11 +57,11 @@
         }
     ],
     "system_performance": {
-        "total_frames_processed": 200,
-        "average_processing_time": "0.1 seconds",
+        "total_frames_processed": 0,
+        "average_processing_time": "0.0 seconds",
         "false_positives": 0,
         "false_negatives": 0,
-        "accuracy": "98.5%"
+        "accuracy": "0%"
     },
     "alert_statistics": {
         "by_category": {
@@ -72,8 +72,8 @@
         },
         "by_object": {
             "car": 1,
-            "person": 1,
             "pottedplant": 1,
+            "person": 1,
             "backpack": 1,
             "truck": 1
         }

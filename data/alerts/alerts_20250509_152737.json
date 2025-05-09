@@ -1,0 +1,54 @@
+{
+    "session_info": {
+        "start_time": "2025-05-09 15:27:37",
+        "end_time": "2025-05-09 15:28:21",
+        "filename": "alerts_20250509_152737.json"
+    },
+    "alert_summary": {
+        "total_alerts": 2,
+        "time_window": "24 hours",
+        "categories": {
+            "HIGH_PRIORITY": 1,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 1,
+            "IGNORED": 0
+        }
+    },
+    "alerts": [
+        {
+            "timestamp": "2025-05-09 15:28:03",
+            "object": "person",
+            "confidence": 0.9157404899597168,
+            "category": "HIGH_PRIORITY",
+            "description": "Detected unknown person with 0.92 confidence",
+            "status": "NEW"
+        },
+        {
+            "timestamp": "2025-05-09 15:28:07",
+            "object": "toothbrush",
+            "confidence": 0.5446525812149048,
+            "category": "LOW_PRIORITY",
+            "description": "Detected toothbrush with 0.54 confidence",
+            "status": "NEW"
+        }
+    ],
+    "system_performance": {
+        "total_frames_processed": 0,
+        "average_processing_time": "0.0 seconds",
+        "false_positives": 0,
+        "false_negatives": 0,
+        "accuracy": "0%"
+    },
+    "alert_statistics": {
+        "by_category": {
+            "HIGH_PRIORITY": 1,
+            "MEDIUM_PRIORITY": 0,
+            "LOW_PRIORITY": 1,
+            "IGNORED": 0
+        },
+        "by_object": {
+            "person": 1,
+            "toothbrush": 1
+        }
+    }
+}
